@@ -1,0 +1,110 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/head}">
+
+<div layout:fragment="content">
+
+	<div class="panel-heading">게시글 리스트</div>
+	<div class="panel-body">
+	
+	<div class="panel-body pull-right">
+		<h3>
+			<a class="label label-default " th:href="@{write(flag='WRITE')}">글쓰기</a>
+		</h3>
+	</div>
+	<div class="panel-body">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>제목</th>
+					<th>작성자</th>
+					<th>작성 날짜</th>
+					<th>수정 날짜</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="data : ${list}">
+					<td><span th:text="${data.pno}"></span></td>
+					<td>
+						<th:block th:each="seq: ${#numbers.sequence(0,data.groupLayer)}">
+								&nbsp;
+						</th:block>						
+						<a th:href="${data.pno}" class='postingLink'>
+							<th:block th:if="${data.groupLayer} != 0">RE:</th:block>
+							<span th:text="${data.title}"></span>
+						</a>
+						<span class="badge bg-teal" th:text="${data.replycnt}"></span>
+					
+					</td>
+					<td><span th:text="${data.writer}"></span></td>
+					<td><span
+						th:text="${#dates.format(data.createDate,'yyyy-MM-dd HH:mm:ss')}"></span></td>
+					<td><span
+						th:text="${#dates.format(data.updateDate,'yyyy-MM-dd HH:mm:ss')}"></span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<input type="hidden" id="hdMaxSeq" th:value="${maxseq}"/>
+
+		<nav>
+		<div class="text-center">
+			<ul class="pagination">
+				<li class="page-item" th:if="${result.prevPage}"><a th:href="@{list(page=${result.prevPage.pageNumber} + 1)}">PREV</a></li>
+				<li class="page-item" th:classappend="${p.pageNumber == result.currentPageNum -1}?active: '' " th:each="p:${result.pageList}"><a th:href="@{list(page=${p.pageNumber} + 1)}" th:text="${p.pageNumber}+1"></a></li>
+				<li class="page-item" th:if="${result.nextPage}"><a	th:href="@{list(page=${result.nextPage.pageNumber} + 1)}">NEXT</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<form id='f1' th:action="@{list}" method="get">
+		<input type='hidden' name='page' th:value="${result.currentPageNum}"/>
+		<!-- <input type='hidden' name='size' th:value="${result.currentPage.pageSize}"/> -->
+		<input type='hidden' name='size' th:value="${result.currentPageSize}"/>
+				
+	</form>
+	
+</div>
+</div>
+<th:block layout:fragment="script">	
+	<script th:inline="javascript">
+	
+ 		$(window).load(function(){
+			
+			var msg = [[${msg}]];
+			
+			if(msg =='success') {
+				alert("정상적으로 처리되었습니다.");
+				var stateObj = { msg: "" };
+			}else if(msg=='fail'){
+				alert("답글이 있는 글은 삭제할 수 없습니다.");
+				var stateObj = { msg: "" };
+			}
+		}); 
+	
+		$(document).ready(function() {
+			var formObj = $("#f1");
+			
+/* 			$(".pagination li").click(function(e) {
+				debugger
+				
+				e.preventDefault();
+				formObj.find('[name="page"]').val($(this).attr('href'));
+				formObj.attr("action", [[@{'/posting/view'}]]);
+				formObj.submit();
+			});  */
+			
+			$(".postingLink").click(function(e){
+				
+				e.preventDefault(); 
+				
+				var PostingNo = $(this).attr("href");
+				formObj.attr("action",[[@{'/posting/view'}]]);
+				formObj.append("<input type='hidden' name='pno' value='" + PostingNo + "' />");
+				
+				formObj.submit();				
+			});	
+		});
+	</script>
+</th:block>	

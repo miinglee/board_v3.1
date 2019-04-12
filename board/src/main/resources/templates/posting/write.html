@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+<script th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 CSS -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}" />
+</head>
+<body>
+
+	<div class="panel-heading">글 작성 페이지</div>
+	<div class="panel-body">
+
+		<!-- <form th:action="@{write}" method="post"> -->
+		<form id='f1' enctype="multipart/form-data">
+		
+		
+			<!-- <input type="text" class="form-control" th:value="${vo.pno}" name="pno"/> -->
+			<input type="hidden" class="form-control" th:value="${vo.parentNo}" name="parentNo"/>
+			<input type="hidden" class="form-control" th:value="${vo.groupOrder}" name="groupOrder"/>
+			<input type="hidden" class="form-control" th:value="${vo.groupLayer}" name="groupLayer"/>
+			
+			<div class="form-group">
+				<label>작성자</label> <input class="form-control" name="writer" th:value="${vo.writer}" />
+			</div>
+			<div class="form-group">
+				<label>제목</label> <input class="form-control" name="title" th:value="${vo.title}" />
+				<p class="help-block">제목</p>
+			</div>
+
+			<div class="form-group">
+				<label>내용</label>
+				<textarea class="form-control" rows="3" name='content' th:text="${vo.content}"></textarea>				
+			</div>
+			<div class="form-group">
+				<label>이미지 첨부</label>
+				<input type="file" id="files" name="files"/>
+			<!-- <input type="file" id="files" name="files" multiple="multiple" /> -->			
+			</div>
+			
+			<a href="#" class="btn btn-warning btnSubmit">제출</a>
+			<button type="reset" class="btn btn-primary">리셋</button>
+		</form>
+		<input type="hidden" th:value="${maxseq}" id="maxseq"/>
+		<input type="hidden" th:value="${flag}" id="flag"/>
+	</div>
+	
+<!-- <th:block layout:fragment="script"> -->
+
+	<script th:inline="javascript">
+	
+	$(document).ready(function(){
+		var flag = $("#flag").val();
+		var action;
+		
+		if(flag=="ADDWRITE"){
+			$(".panel-heading").text("답글 작성 페이지");
+			action = "addWrite";
+		}else if(flag=="WRITE"){
+			action = "write/"+ $("#maxseq").val();
+		}
+		
+		var formObj = $('#f1');
+		
+		$(".btnSubmit").click(function(){
+			debugger
+	
+			formObj.attr("action", action);
+			formObj.attr("method", "post");
+			formObj.submit();
+			
+		});		
+		
+	});
+	
+	</script>
+<!-- </th:block> -->
+</body>
+</html>

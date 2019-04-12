@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title></title>
+<head>
+<script th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 CSS -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}" />
+</head>
+<body>
+	<div class="page-header">
+		<div class="jumbotron">
+	  		<h2>계층형 게시판 만들기</h2>
+		</div>	
+	</div> 
+	<div  class="pull-right">
+		<a class="nav-link" th:href="@{/member/login}">로그인</a>
+		<a class="nav-link" th:href="@{/member/join}">회원가입</a>
+	</div>
+	<div class="panel panel-default" layout:fragment="content">
+
+	</div>
+	
+	<th:block layout:fragment="script"></th:block>
+</body>
+</html>

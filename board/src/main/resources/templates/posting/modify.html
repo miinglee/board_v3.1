@@ -1,0 +1,98 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+<script th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 CSS -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}" />
+
+</head>
+<body>
+	<div class="panel-heading">수정 페이지</div>
+	<div class="panel-body">
+
+    <form id='f1' enctype="multipart/form-data">
+
+		<div class="form-group">
+			<label>번호</label> <input class="form-control" name="pno" th:value="${vo.pno}" readonly="readonly" />
+		</div>
+		<div class="form-group">
+			<label>작성자</label> <input class="form-control" name="writer" th:value="${vo.writer}" readonly="readonly" />
+		</div>
+		<div class="form-group">
+			<label>작성 날짜</label> <input class="form-control" name="createDate" 	th:value="${#dates.format(vo.createDate,'yyyy-MM-dd HH:mm:ss')}" readonly="readonly" />
+		</div>
+		<div class="form-group">
+			<label>제목</label> <input class="form-control" name="title" 	th:value="${vo.title}" />
+		</div>
+		<div class="form-group">
+			<label>내용</label>
+			<textarea class="form-control" rows="3" name='content' th:text="${vo.content}"></textarea>		
+		</div>
+		<div class="form-group">
+			<label>이미지 첨부</label>
+			<p th:each="file, iter : ${fileList}">
+				<span th:text="${file.fname}"></span>
+				<input type="hidden" th:value="${file.fno}" id="idx" th:name="@{'idx'+${iter.index}}"/>
+				<a href="#this" class="btn" th:id="@{'btnDeleteFiles_'+${iter.index}}" th:name="@{'btnDeleteFiles_'+${iter.index}}">파일 삭제</a>	
+			</p>
+			<input type="file" id="files" name="files" multiple="multiple" />
+		</div>
+
+		<input type='hidden' name="page" th:value="${pageVO.page}"/>
+		<input type='hidden' name="size" th:value="${pageVO.size}"/>
+		<input type='hidden' name="pno" th:value="${vo.pno}"/>
+		<input type='hidden' name="groupOrder" th:value="${vo.groupOrder}"/>
+		<input type='hidden' name="parentNo" th:value="${vo.parentNo}"/>
+		<input type='hidden' name="groupLayer" th:value="${vo.groupLayer}"/>
+		</form>
+
+		<div class="pull-right">
+		
+		  <a href="#" class="btn btn-warning btnModify">수정</a>
+		<!-- <input type="button" class="btn btn-warning btnModify" value="수정" id="btnModify"/> -->
+		  <a href="#" class="btn btn-danger btnDelete">삭제</a>
+
+			<a th:href="@{ list(page=${pageVO.page},  size=${pageVO.size}, pno = ${vo.pno})}" class="btn btn-primary">취소</a> 
+		</div>
+
+	</div>
+
+	<script th:inline="javascript">
+	$(document).ready(function(){
+	
+		var formObj = $("#f1");
+		
+		$(".btnDelete").click(function(){ // 글 삭제 버튼
+			debugger
+			formObj.attr("action","delete");
+			formObj.attr("method", "post");
+			
+			formObj.submit();
+			
+		});
+		
+		$(".btnModify").click(function(){ // 글 수정 버튼
+			debugger
+			formObj.attr("action","modify");
+			formObj.attr("method", "post");
+			
+			formObj.submit();
+			
+		});		
+		
+		$("a[name^='btnDelete']").on("click", function(e){ // 파일 삭제 버튼
+			debugger
+			e.preventDefault();
+			$(this).parent().remove();
+		});
+
+	});	
+	</script>
+
+</body>
+</html>

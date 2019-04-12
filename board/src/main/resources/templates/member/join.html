@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+<script th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 CSS -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}" />
+</head>
+<body>
+<div class="container">
+    <!-- <div class="col-md-12"> -->
+        <div class="page-header">
+            <h1>회원가입</h1>
+        </div>
+        <form class="form-horizontal" id="f1">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+             <div class="form-group">
+                <label class="col-sm-3 control-label" for="name">이름</label>
+                <div class="col-sm-8">
+                    <input id="name" name="name" type="text" size="50"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="email">이메일</label>
+                <div class="col-sm-8">
+                    <input id="email" name="email" type="email" size="50"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="email">이메일 확인</label>
+                <div class="col-sm-8">
+                    <input id="email2" name="email2" type="email"  placeholder="이메일을 재입력해주세요." size="50"/>
+                </div>
+            </div>            
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="password">비밀번호</label>
+                <div class="col-sm-8">
+                    <input id="password" name="password" type="password" placeholder="영문, 숫자 혼합하여 6~20자리 이내" size="50"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="password">비밀번호 재확인</label>
+                <div class="col-sm-8">
+                    <input id="password2" name="password2" type="password" placeholder="비밀번호를 재입력해주세요." size="50"/>
+                </div>
+            </div>            
+            <div class="form-group">
+                <div class="col-sm-9 text-center">
+                    <button class="btn btn-primary" type="submit" id="btnSubmit">회원가입<i class="fa fa-check spaceLeft"></i></button>
+                    <!-- <button class="btn btn-danger" onclick="cancle()" type="submit">가입취소<i class="fa fa-times spaceLeft"></i></button> -->
+                </div>
+            </div>
+        </form>
+    <!-- </div> -->
+</div>
+	<script th:inline="javascript">
+	
+	$(document).ready(function(){
+		var action;		
+		var formObj = $('#f1');
+		
+		$("#btnSubmit").click(function(){
+			
+			if(validateEmail() && validatePW()){
+				debugger;
+				formObj.attr("action", "register");
+				formObj.attr("method", "post");
+				formObj.submit();
+			}			
+		});	
+		
+	});
+	
+	// 이메일 Validation
+	function validateEmail() {
+		 	debugger
+		  var emailVal = $("#email").val();
+		  var emailVal2 = $("#email2").val();
+		  
+		  // 일치 여부
+		  if(emailVal != emailVal2){
+			  alert('이메일이 일치하지 않습니다.');
+			  return false;
+		  }
+		  
+		  // 이메일 형식 검증
+		  var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+		  
+		  if (emailVal.match(regExp) == null) {
+		   	alert('이메일 형식에 맞지 않습니다.');
+		   	return false;
+		  }
+		  return true;
+	};
+	
+	// 비밀번호 Validation
+	function validatePW(){
+		debugger
+		  var pwVal = $("#password").val();
+		  var pwVal2 = $("#password2").val();
+		  
+		  // 일치 여부
+		  if(pwVal != pwVal2){
+			  alert('비밀번호가 일치하지 않습니다.');
+			  return false;
+		  }
+		 
+		  // 공백 여부
+		  var str_space = /\s/;
+		  if(str_space.exec(pwVal)) {
+			 alert('비밀번호를 확인하세요. (영문,숫자를 혼합하여 6~20자 이내)');
+			 $('#password').val('');	
+			 $('#password').focus(); 
+			 return false;
+		  }		  
+		 
+		  // 비밀번호 형식 검증
+		  var reg_pwd = /^.*(?=.{6,20})(?=.*[0-9])(?=.*[a-zA-Z]).*$/;
+		  if(!reg_pwd.test(pwVal)){
+			 alert('비밀번호를 확인하세요. (영문,숫자를 혼합하여 6~20자 이내)');
+			 $('#password').val('');	
+			 $('#password').focus(); 
+			 return false;
+		  }
+		return true;
+	};
+	
+	</script>
+</body>
+</html>

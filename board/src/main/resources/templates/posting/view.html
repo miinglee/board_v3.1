@@ -1,0 +1,313 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+
+<script th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 합쳐지고 최소화된 최신 CSS -->
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<!-- 부가적인 테마 -->
+<link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}" />
+
+</head>
+<body>
+	<div class="panel-heading">글 상세 페이지</div>
+	<div class="panel-body">
+		<div class="form-group">
+			<label>번호</label> <input class="form-control" name="pno" th:value="${vo.pno}" readonly="readonly" />
+		</div>
+		<div class="form-group">
+			<label>작성자</label> 
+			<input class="form-control" name="writer" th:value="${vo.writer}" readonly="readonly" />
+		</div>
+		<div class="form-group">
+			<label>작성 날짜</label> 
+			<input class="form-control" name="createDate" th:value="${#dates.format(vo.createDate,'yyyy-MM-dd HH:mm:ss')}" readonly="readonly" />
+		</div>
+		<div class="form-group">
+			<label>제목</label> <input class="form-control" name="title" th:value="${vo.title}" readonly="readonly" />
+			<!-- <p class="help-block">Title text here.</p> -->
+		</div>
+		<div class="form-group">
+			<label>내용</label>
+			<textarea class="form-control" rows="3" name='content' th:text="${vo.content}" readonly="readonly"></textarea>
+			<div th:each="file : ${fileList}" th:if="${file.fname}!=''">
+				<img th:src="@{'/upload/' + ${file.fname}}" class="img-responsive" style="width:auto;" alt="Image"/>				
+			</div>
+		</div>
+		
+		<input type="hidden" id="txtParentNo" th:value="${vo.parentNo}"/>
+		<input type="hidden" id="txtGroupOrder" th:value="${vo.groupOrder}"/>
+		<input type="hidden" id="txtGroupLayer" th:value="${vo.groupLayer}"/>
+
+		<div class="pull-right">
+			<a th:href="@{ write(flag='ADDWRITE', pno=${vo.pno}, parentNo=${vo.parentNo}, groupOrder=${vo.groupOrder}, groupLayer = ${vo.groupLayer})}" class="btn btn-default">답글</a>
+			<a th:href="@{ modify(page=${pageVO.page}, size=${pageVO.size}, pno =${vo.pno})}" class="btn btn-default">수정/삭제</a> 
+			<a th:href="@{ list(page=${pageVO.page}, size=${pageVO.size}, pno = ${vo.pno})}" class="btn btn-primary">취소</a>
+		</div>
+	</div>
+	<input type="hidden" id="hdSeq"/>
+	<div class='container'>
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>내용</th>
+					<th>작성자</th>
+					<th>작성 날짜</th>
+<!-- 					<th>ParentNo</th>
+					<th>GroupOrder</th>
+					<th>GroupLayer</th> -->
+				</tr>
+			</thead>
+			<tbody id="tbReply"></tbody>
+		</table>
+		<div class='pull-right'>
+			<button type="button" class="btn btn-default" id='btnAddReply'>댓글</button>
+		</div>
+	</div>
+
+	<!-- Modal 시작 -->
+	<div id="myModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">제목</h4>
+				</div>
+				<div class="modal-body">
+					<label>작성자</label> 
+					<input type="text" class="form-control" name='txtReplyer' />
+					<label>내용</label> 
+					<input type="text" class="form-control" name='txtReply' />
+					<input type="hidden" class="form-control" name='txtParentNo' />
+					<input type="hidden" class="form-control" name='txtGroupOrder' />
+					<input type="hidden" class="form-control" name='txtGroupLayer' />
+				</div>
+				<div class="modal-footer">
+					<button type='button' class='btn btn-default' id="btnAddReReply">대댓글</button>
+					<button id='btnDelModal' class="btn btn-danger">삭제</button>
+					<button id='btnSaveModal' class="btn btn-info">저장</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal 끝 -->	
+	
+<!-- 	<nav>
+		<div class="text-center">
+			<ul class="pagination">
+				<li class="page-item" th:if="${result.prevPage}"><a
+					th:href="@{replies(page=${result.prevPage.pageNumber} + 1)}">&lsaquo;
+						</a></li>
+				<li class="page-item"
+					th:classappend="${p.pageNumber == result.currentPageNum -1}?active: '' "
+					th:each="p:${result.pageList}"><a th:href="@{list(page=${p.pageNumber} + 1)}" th:text="${p.pageNumber}+1"></a></li>
+				<li class="page-item" th:if="${result.nextPage}"><a
+					th:href="@{replies(page=${result.nextPage.pageNumber} + 1)}">&rsaquo;
+						</a></li>
+			</ul>
+		</div>
+	</nav> -->
+		
+<!-- <th:block layout:fragment="script"> -->
+<script th:inline="javascript" th:src="${'/js/reply.js'}"></script>
+<script th:inline="javascript">
+$(window).load(function(){
+	
+	var msg = [[${msg}]];
+		
+	if(msg =='success') {
+		alert("정상적으로 처리되었습니다.");
+		var stateObj = { msg: "" };
+	}
+});
+
+$(document).ready(function (e){
+	var mode;
+	
+	var pno = [[${vo.pno}]];
+	var rnoObj = $("input[name='txtRno']");
+	var txtReplyObj = $("input[name='txtReply']");
+	var txtReplyerObj = $("input[name='txtReplyer']");
+	
+	var txtParentNoObj = $("input[name='txtParentNo']");
+	var txtGroupOrderObj = $("input[name='txtGroupOrder']");
+	var txtGroupLayerObj = $("input[name='txtGroupLayer']");
+	
+	var hdSeqObj = $("#hdSeq");
+	
+	  var rno; 		
+	  
+	  $("#btnAddReReply").on('click', function(){
+		  debugger
+		  
+		  $("#myModal").modal("hide");
+		  txtReplyObj.val('');
+		  txtReplyerObj.val('');	  
+
+		  var parentno = txtParentNoObj.val();
+		  var grouporder =  parseInt(txtGroupOrderObj.val()) + 1;
+		  var grouplayer = parseInt(txtGroupLayerObj.val()) +1;
+		  
+		  txtParentNoObj.val(parentno);
+		  txtGroupOrderObj.val(grouporder);
+		  txtGroupLayerObj.val(grouplayer);
+
+		  $("#btnDelModal").hide();
+		  $("#myModal").modal("show");
+		  $(".modal-title").text("대댓글 수정/삭제");
+		  
+		  mode= "ADDREPLY";
+	  });
+	  
+		
+	  $("#btnAddReply").on('click', function(){
+		  
+		  $("#myModal").modal("show");
+		  $(".modal-title").text("댓글 작성");
+		  
+		  txtReplyObj.val('');
+		  txtReplyerObj.val('');	
+		  
+		  $("#btnDelModal").hide();
+		  
+		  var parentno = hdSeqObj.val();
+		  var grouporder = 0;
+		  var grouplayer = 0;
+		  
+		  txtParentNoObj.val(parentno);
+		  txtGroupOrderObj.val(grouporder);
+		  txtGroupLayerObj.val(grouplayer);
+		  
+		  mode= "ADD";
+	  });
+	  
+	   $("#btnDelModal").on("click", function(){
+			
+			  var obj = {'pno':pno, 'rno':rno, 'parentno':txtParentNoObj.val(), 
+					  'grouporder':txtGroupOrderObj.val(), 'grouplayer':txtGroupLayerObj.val()};
+			  debugger
+			  replyMaker.remove(obj, function(list){
+				  
+				  alert("댓글이 삭제되었습니다.");
+					afterAll(list);
+			  });		  
+		  });
+		  
+		  
+		  $("#tbReply").on("click", "tr", function(e){
+			
+			  var tds = $(this).find('td');
+			  
+			  //console.log(tds);
+			  
+			  rno = tds[0].innerHTML;
+			  //rno = $("#hdRno").val();
+			  mode ='MOD';
+			  
+			  txtReplyObj.val(tds[0].innerHTML);
+			  txtReplyerObj.val(tds[1].innerHTML);
+			  
+			  txtParentNoObj.val($("#hdParentno_"+rno).val());
+			  txtGroupOrderObj.val($("#hdGrouporder_"+rno).val());
+			  txtGroupLayerObj.val($("#hdGrouplayer_"+rno).val());
+			  
+			  $("#btnDelModal").show();
+			  $("#myModal").modal("show");
+			  $(".modal-title").text("댓글 수정/삭제");
+			  
+		  });
+		  
+		  function afterAll(list){
+			  printList(list);
+			  $("#myModal").modal("hide");
+			  txtReplyObj.val("");
+			  txtReplyerObj.val("");
+		  }
+		  
+		  
+		  $("#btnSaveModal").click(function(){
+			  
+			  debugger
+			  
+			  var replytext =  txtReplyObj.val();
+			  var replyer = txtReplyerObj.val();
+			  
+			  var parentno = txtParentNoObj.val();
+			  var grouporder = txtGroupOrderObj.val();
+			  var grouplayer = txtGroupLayerObj.val();
+			  			  
+			  if(mode =='ADD' || mode == 'ADDREPLY'){
+				  					
+					var obj = {'replytext':replytext, 'replyer':replyer, 'pno':pno, 
+							'parentno':parentno, 'grouporder':grouporder, 'grouplayer':grouplayer};
+					
+					//console.log(obj);
+					
+					replyMaker.add(obj, mode, function(list){
+						alert("댓글이 추가되었습니다.");
+						afterAll(list);
+					});				
+			  
+			  }else if(mode='MOD'){
+				  debugger
+				  var obj = {'replytext':replytext, 'pno':pno, 'rno':rno, 'replyer':replyer};
+				  			  
+				  replyMaker.update(obj, function(list){
+					  
+						alert("댓글이 수정되었습니다.");
+						afterAll(list);
+				  });			  
+			  }				
+		  });
+	  		(function getAllReplies(){ // 전체 댓글 리스트 가져오기	
+				replyMaker.getAll([[${vo.pno}]], printList);
+/* 				var obj = {'pno':[[${vo.pno}]], 'pageNum':pageNum};
+				replyMaker.getPagination(obj); */
+			})();
+	  		
+	  		function printMaxSeq(maxseq){
+	  			hdSeqObj.val(parseInt(maxseq));
+	  		}
+	  	  function printList(list){
+	  		  	  		  
+	  		   replyMaker.getMaxSeq([[${vo.pno}]], printMaxSeq);
+	  		   
+			 	var str = "";
+				var replyObj;
+					/*<![CDATA[*/
+					for(var i=0; i < list.length; i++){
+						replyObj = list[i];
+						var rno = replyObj.rno;
+						var blank = "";
+
+						str += "<tr>" +
+		 				"<td>"+ replyObj.rno+" </td>" +
+						"<td>"+ replyObj.replytext+" </td>" +
+						"<td>"+ replyObj.replyer+" </td>" +
+						"<td>"+ formatDate(replyObj.createdate)+" </td>" +
+						"<input type='hidden' value='"+ replyObj.parentno+"' id='hdParentno_"+rno+"'/>" +
+						"<input type='hidden' value='"+ replyObj.grouporder+"' id='hdGrouporder_"+rno+"'>" +
+						"<input type='hidden' value='"+ replyObj.grouplayer+"' id='hdGrouplayer_"+rno+"'>" +
+						"</tr>";
+					}
+					 /*]]>*/
+					 
+					$("#tbReply").html(str);					 
+		  }
+			
+			function formatDate(timeValue){			
+				var date = new Date(timeValue);
+				return  date.getFullYear() + "-" + (date.getMonth()+1 >= 10?date.getMonth()+1 : '0'+ (date.getMonth()+1)) 
+				  + "-" +(date.getDate() >= 10 ?date.getDate() : '0'+ date.getDate())
+				  + " " + date.toLocaleTimeString().toLowerCase();
+			}
+});
+</script>
+<!-- </th:block>	 -->
+</body>
+</html>
