@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8"/>
 <title>Insert title here</title>
@@ -10,6 +10,7 @@
 <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
 <!-- 부가적인 테마 -->
 <link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}" />
+
 </head>
 <body>
 
@@ -18,7 +19,8 @@
 
 		<!-- <form th:action="@{write}" method="post"> -->
 		<form id='f1' enctype="multipart/form-data">
-		
+<!--          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf_token}"/>
+ --> 
 		
 			<!-- <input type="text" class="form-control" th:value="${vo.pno}" name="pno"/> -->
 			<input type="hidden" class="form-control" th:value="${vo.parentNo}" name="parentNo"/>
@@ -42,7 +44,6 @@
 				<input type="file" id="files" name="files"/>
 			<!-- <input type="file" id="files" name="files" multiple="multiple" /> -->			
 			</div>
-			
 			<a href="#" class="btn btn-warning btnSubmit">제출</a>
 			<button type="reset" class="btn btn-primary">리셋</button>
 		</form>
@@ -67,14 +68,15 @@
 		
 		var formObj = $('#f1');
 		
-		$(".btnSubmit").click(function(){
+ 		$(".btnSubmit").click(function(){
 			debugger
 	
 			formObj.attr("action", action);
+			//formObj.attr("th:action", "@{/write/"+$("#maxseq").val()+"}");
 			formObj.attr("method", "post");
 			formObj.submit();
 			
-		});		
+		});	 
 		
 	});
 	

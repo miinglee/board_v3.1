@@ -3,6 +3,7 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
+
 <title></title>
 <head>
 <script th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
@@ -20,7 +21,7 @@
 		</div>	
 	</div> 
 	<div  class="pull-right">
-		<a class="nav-link" th:href="@{/member/login}">로그인</a>
+		<a class="nav-link" th:href="@{/member/loginView}">로그인</a>
 		<a class="nav-link" th:href="@{/member/join}">회원가입</a>
 	</div>
 	<div class="panel panel-default" layout:fragment="content">

@@ -29,19 +29,18 @@ public class MemberController {
 	MemberRepository memberRepository;
 	
 	///////////////////////////// # 로그인 작성 (GET)
-	@GetMapping("/show")
+	@GetMapping("/loginView")
 	public ModelAndView Login() {
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("member/show");
+		mv.setViewName("member/loginView");
 		return mv;
 	}
 	
 	///////////////////////////// # 로그인 (POST)
 	@PostMapping("/validate")
-	public ModelAndView LoginPOST(HttpServletRequest request) {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("/posting/list");
-		return mv;
+	public String LoginPOST(HttpServletRequest request) {
+		log.info("================Login[POST] /member/validate");
+		return "redirect:/posting/list";
 	}
 	
 	///////////////////////////// # 회원가입 작성 (GET)
