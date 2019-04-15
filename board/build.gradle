@@ -61,7 +61,8 @@ dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 	compile group: 'org.apache.httpcomponents', name: 'httpclient'
 	compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
-	
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest'
+	compile group: 'org.springframework.security', name: 'spring-security-jwt'
 }
 dependencyManagement {
     imports {

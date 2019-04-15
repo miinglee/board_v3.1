@@ -25,12 +25,15 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		resources.resourceId(RESOURCE_ID).stateless(false);
 	}
 
+	// 자원서버 접근권한 설정
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
         http.
                 anonymous().disable()
                 .authorizeRequests()
+                //.anyRequest().authenticated()
                 .antMatchers("/posting/**").authenticated()
+                //.antMatchers("/posting/**").access("#oauth2.hasScope('read')")
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
 	}
 

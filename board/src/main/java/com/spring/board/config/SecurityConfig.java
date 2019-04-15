@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
@@ -55,8 +56,8 @@ public TokenStore tokenStore() {
 }
 
 @Bean
-public BCryptPasswordEncoder encoder(){
-    return new BCryptPasswordEncoder();
+public PasswordEncoder passwordEncoder() {
+return new BCryptPasswordEncoder();
 }
 
 
@@ -83,28 +84,30 @@ protected void configure(HttpSecurity http) throws Exception {
 	.anyRequest().authenticated()
 	.and().formLogin()
 	.loginPage("/member/loginView") // 로그인 뷰
-	//.loginProcessingUrl("/member/validate") // 로그인 수행
+	.loginProcessingUrl("/member/validate") // 로그인 수행
+	//.successHandler(new LoginSuccessHandler())
 	.defaultSuccessUrl("/posting/list") // 로그인 성공시
 	.usernameParameter("email") // 로그인 뷰에서 아이디로 사용할 이름
 	.passwordParameter("password") // 로그인 패스워드로 사용할 이름
-	.permitAll() /* 모두 오픈 ( 반대는 denyAll() ) */
+	.permitAll(); /* 모두 오픈 ( 반대는 denyAll() ) */
 	//.and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-	.and().authenticationProvider(authProvider); // 로그인 프로세스가 진행될 provider
+	
+	//http.authenticationProvider(authProvider); // 로그인 프로세스가 진행될 provider (로그인 버튼이 눌러지면 authenticate 메소드를 호출하여 로그인 검사를 수행함)
 }
 
-@Bean
-public FilterRegistrationBean corsFilter() {
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowCredentials(true);
-    config.addAllowedOrigin("*");
-    config.addAllowedHeader("*");
-    config.addAllowedMethod("*");
-    source.registerCorsConfiguration("/**", config);
-    FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
-    bean.setOrder(0);
-    return bean;
-}
+//@Bean
+//public FilterRegistrationBean corsFilter() {
+//    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//    CorsConfiguration config = new CorsConfiguration();
+//    config.setAllowCredentials(true);
+//    config.addAllowedOrigin("*");
+//    config.addAllowedHeader("*");
+//    config.addAllowedMethod("*");
+//    source.registerCorsConfiguration("/**", config);
+//    FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+//    bean.setOrder(0);
+//    return bean;
+//}
 
 }
 

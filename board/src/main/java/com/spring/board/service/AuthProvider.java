@@ -1,11 +1,24 @@
 package com.spring.board.service;
 
+import java.net.URI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.spring.board.util.HashUtil;
+
+import lombok.extern.java.Log;
 
 /***
  * [인증 provider]
@@ -14,6 +27,7 @@ import com.spring.board.util.HashUtil;
  * @author Sunmin Lee
  *
  */
+@Log
 @Component("authProvider")
 public class AuthProvider implements AuthenticationProvider{
 
@@ -21,9 +35,15 @@ public class AuthProvider implements AuthenticationProvider{
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 	    String id = authentication.getName();
 	    String password = HashUtil.sha256(authentication.getCredentials().toString());
-	
+	    
+	    log.info("///*******************************"+ authentication);
+		return authentication;
 
-		return null;
+	    
+
+		
+        // 로그인 성공시 로그인 사용자 정보 반환
+
 	}
 
 	@Override
@@ -31,6 +51,4 @@ public class AuthProvider implements AuthenticationProvider{
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-
 }
