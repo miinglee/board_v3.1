@@ -85,7 +85,7 @@ protected void configure(HttpSecurity http) throws Exception {
 	.and().formLogin()
 	.loginPage("/member/loginView") // 로그인 뷰
 	.loginProcessingUrl("/member/validate") // 로그인 수행
-	//.successHandler(new LoginSuccessHandler())
+	.successHandler(new LoginSuccessHandler())
 	.defaultSuccessUrl("/posting/list") // 로그인 성공시
 	.usernameParameter("email") // 로그인 뷰에서 아이디로 사용할 이름
 	.passwordParameter("password") // 로그인 패스워드로 사용할 이름
