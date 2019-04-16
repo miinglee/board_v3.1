@@ -5,6 +5,8 @@ import java.net.URI;
 import javax.management.relation.Role;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
@@ -29,7 +31,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.spring.board.entity.Member;
 import com.spring.board.repository.MemberRepository;
+import com.spring.board.service.AccessTokenService;
+import com.spring.board.service.JwtService;
 
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.java.Log;
@@ -43,75 +48,33 @@ public class MemberController {
 	@Autowired
 	MemberRepository memberRepository;
 	
-	
+    @Autowired
+    private JwtService jwtService;	
+
+    @Autowired
+    private AccessTokenService accessTokenService;
+    
 	///////////////////////////// # 로그인 작성 (GET)
 	@GetMapping("/loginView")
-	public ModelAndView Login() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("member/loginView");
-		return mv;
+	public void Login() {
+//		ModelAndView mv = new ModelAndView();
+//		mv.setViewName("member/loginView");
+//		return mv;
 	}
 	
 	///////////////////////////// # 로그인 (POST)
-	@PostMapping("/validate")
-	public String LoginPOST(HttpServletRequest request) {
-		log.info("================Login[POST] /member/validate");
-		log.info("================request : " + request);
-		
-		String username = "email";
-		String password = "password";
-		String accessToken = "";
-		
-		// access Token 받아오기
-		try {
-			accessToken = requestAccessToken(username, password, "http://localhost:8080/oauth/token");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		log.info("=============accessToken : " + accessToken);
-		
-		// 쿠키에 저장
-		Cookie cookie = new Cookie("accessToken", accessToken);
-		
-		
-		return "redirect:/posting/list";
-	}
+//	@PostMapping("/validate")
+//	public String LoginPOST(HttpServletRequest request) {
+//		log.info("================Login[POST] /member/validate");
+//		log.info("================request : username " + request.getAttribute("username"));			
+//		
+//		String username = request.getParameter("username");
+//		String password = request.getParameter("password");
+//		
+//
+//		return "/posting/list";
+//	}
 
-	 public String requestAccessToken(String username, String password, String oauthaurl) throws JSONException {
-	        log.info("===================Request access token");
-	        String token = null;       
-
-	        String plainCreds = "devglan-client:devglan-secret";
-	        byte[] plainCredsBytes = plainCreds.getBytes();
-	        byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-	        String base64Creds = new String(base64CredsBytes);
-	        
-	        RestTemplate restTemplate = new RestTemplate();
-	        HttpHeaders headers = new HttpHeaders();	        
-	        headers.add("Authorization", "Basic " + base64Creds);
-	        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-	        //HttpURLConnection
-
-	        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(oauthaurl)
-	                                                           .queryParam("grant_type", "password")
-	                                                           .queryParam("username", username)
-	                                                           .queryParam("password", password);
-
-	        URI myUri=builder.buildAndExpand().toUri();
-	        log.info("========================myUri"+myUri);
-	        HttpEntity<?> request = new HttpEntity<>(headers);
-	        log.info("========================request"+request);
-	        ResponseEntity<String> rs = restTemplate.exchange(myUri, HttpMethod.POST, request,String.class);
-	        log.info("========================rs"+rs);
-	        JSONObject jsonObject = new JSONObject(rs.getBody());
-	        log.info("========================access_token : "+jsonObject.getString("access_token"));
-
-	        token = jsonObject.getString("access_token");
-	        //get access_token from jsonObject here
-
-	        return token;
-	    }
     
 	///////////////////////////// # 회원가입 작성 (GET)
 	@GetMapping("/join")

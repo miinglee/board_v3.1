@@ -26,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
+import com.spring.board.interceptor.TokenCheckInterceptor;
 import com.spring.board.service.AuthProvider;
 
 @Configuration
@@ -43,6 +44,8 @@ PasswordEncoder passwordEncoder;
 @Autowired
 AuthProvider authProvider;
 
+@Autowired
+public LoginSuccessHandler loginSuccessHandler;
 
 @Override
 @Bean
@@ -60,33 +63,32 @@ public PasswordEncoder passwordEncoder() {
 return new BCryptPasswordEncoder();
 }
 
-
-    /* 인증방식 */
+/* 인증방식 */
 @Autowired
 public void configure(AuthenticationManagerBuilder auth) throws Exception {
 auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
 }
 
 
-    /* Security 제외 패턴 */
+/* Security 제외 패턴 */
 @Override
 public void configure(WebSecurity web) throws Exception {
 web.ignoring()
 .antMatchers("/resources/**","/webjars/**","/js/**","/css/**");
 }
 
-    /* 각종 시큐어 패턴등록 */
+/* 각종 시큐어 패턴등록 */
 @Override
 protected void configure(HttpSecurity http) throws Exception {
 	http
-	//.csrf().disable()
+	.csrf().disable()
 	.authorizeRequests() /* 인증 요청 선언?????? */
 	.anyRequest().authenticated()
 	.and().formLogin()
+	.successHandler(loginSuccessHandler)
 	.loginPage("/member/loginView") // 로그인 뷰
-	.loginProcessingUrl("/member/validate") // 로그인 수행
-	.successHandler(new LoginSuccessHandler())
-	.defaultSuccessUrl("/posting/list") // 로그인 성공시
+	//.loginProcessingUrl("/member/validate") // 로그인 수행	
+	//.defaultSuccessUrl("/posting/list") // 로그인 성공시
 	.usernameParameter("email") // 로그인 뷰에서 아이디로 사용할 이름
 	.passwordParameter("password") // 로그인 패스워드로 사용할 이름
 	.permitAll(); /* 모두 오픈 ( 반대는 denyAll() ) */

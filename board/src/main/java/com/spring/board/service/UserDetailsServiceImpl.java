@@ -36,8 +36,8 @@ public class UserDetailsServiceImpl implements UserDetailsService  {
         	throw new UsernameNotFoundException(email);
         }
         
-        log.info("////////////[email] "+ email);
-        log.info("////////////[password] "+ passwordEncoder().encode(member.getPassword()));
+        //log.info("////////////[email] "+ email);
+        //log.info("////////////[password] "+ passwordEncoder().encode(member.getPassword()));
 
         /* 그냥 String 으로 security User 를 상속한 도메인 객체에 때려박음... 맞는지는 모르겠음 */
         return new UserDetailsImpl(member.getEmail(), passwordEncoder().encode(member.getPassword()), member.getRole().toString());

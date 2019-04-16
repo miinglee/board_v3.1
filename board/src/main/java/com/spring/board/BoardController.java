@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.activation.CommandMap;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -37,7 +40,8 @@ import com.spring.board.entity.ImgFile;
 import com.spring.board.entity.Posting;
 import com.spring.board.repository.FileRepository;
 import com.spring.board.repository.PostingRepository;
-
+import com.spring.board.service.AccessTokenService;
+import com.spring.board.service.JwtService;
 import com.spring.board.vo.*;
 
 import lombok.RequiredArgsConstructor;
@@ -58,6 +62,10 @@ public class BoardController {
 	@Autowired
 	private FileRepository fileRepository;
 
+    @Autowired
+    private JwtService jwtService;
+        
+    
 	///////////////////////////// # 게시판 리스트
 	@GetMapping("/list")
 	public void list(@ModelAttribute("pageVO") PagingVO vo, Model model) {
@@ -74,7 +82,8 @@ public class BoardController {
 		  model.addAttribute("list", list);
 		  
 		  int maxseq = postingRepository.getMaxSeq();
-		  model.addAttribute("maxseq", maxseq);		  
+		  model.addAttribute("maxseq", maxseq);
+
 	}
 	
 	///////////////////////////// # 메인 글 작성 (GET)
