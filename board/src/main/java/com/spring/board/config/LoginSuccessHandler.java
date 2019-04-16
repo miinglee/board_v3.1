@@ -57,6 +57,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 	   token.setPath("/");
 	   response.addCookie(token);	
 	  
+	   username = username.split("@")[0];
 	   Cookie UserID = new Cookie("UserID", username);
 	   UserID.setPath("/");
 	   response.addCookie(UserID);

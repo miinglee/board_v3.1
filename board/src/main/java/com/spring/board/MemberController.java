@@ -75,6 +75,15 @@ public class MemberController {
 //		return "/posting/list";
 //	}
 
+	@GetMapping("/logout")
+	public void logout() {
+		
+	}
+	
+	@GetMapping("/accessDenied")
+	public void accessDenied() {
+		
+	}
     
 	///////////////////////////// # 회원가입 작성 (GET)
 	@GetMapping("/join")
@@ -92,6 +101,7 @@ public class MemberController {
 		Member member = new Member();
 		member.setName(request.getParameter("name"));
 		member.setEmail(request.getParameter("email"));
+		//Role role = new Role();
 		//member.setPassword(request.getParameter("password"));
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		member.setPassword(passwordEncoder.encode(request.getParameter("password")));

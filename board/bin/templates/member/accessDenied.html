@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<title>Hello Spring Security</title>
+<meta charset="utf-8" />
+</head>
+<body>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="alert alert-danger" role="alert">
+
+				<h2>Sorry, you do not have permission to view this page.</h2>
+
+				Click Login at <a th:href="@{/member/loginView}">here</a>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.WebUtils;
 
 import com.spring.board.entity.ImgFile;
 import com.spring.board.entity.Posting;
@@ -89,10 +91,11 @@ public class BoardController {
 	///////////////////////////// # 메인 글 작성 (GET)
 	@GetMapping("/write")
 	public void registerGET(@ModelAttribute("vo") Posting vo, @ModelAttribute("flag")String flag, @ModelAttribute("pno")String pno, 
-			@ModelAttribute("parentNo")String parentNo, @ModelAttribute("groupOrder")String groupOrder, @ModelAttribute("groupLayer")String groupLayer, Model model){
+			@ModelAttribute("parentNo")String parentNo, @ModelAttribute("groupOrder")String groupOrder, @ModelAttribute("groupLayer")String groupLayer, Model model
+			, @CookieValue("UserID") String userID){
 		
-		log.info("write get");
-		vo.setWriter("작성자");
+		log.info("write get");		
+		vo.setWriter(userID);
 		log.info("flag:" + flag);
 		  
 		  if(flag=="ADDWRITE") {
@@ -107,8 +110,8 @@ public class BoardController {
 		  model.addAttribute("vo.groupOrder", groupOrder);
 		  model.addAttribute("vo.groupLayer", groupLayer);
 		  }
-
 		  model.addAttribute("flag", flag);
+		  
 		  int maxseq = postingRepository.getMaxSeq();
 		  model.addAttribute("maxseq", maxseq);		
 	}
@@ -182,8 +185,9 @@ public class BoardController {
 	
 	///////////////////////////// # 메인 상세 페이지 (GET)
 	@GetMapping("/view")
-	public void view(Long pno, @ModelAttribute("pageVO") PagingVO vo, Model model){
+	public void view(Long pno, @ModelAttribute("pageVO") PagingVO vo, Model model, @CookieValue("UserID") String userID){
 		
+		model.addAttribute("UserID", userID);
 		log.info("pno: "+ pno);
 		
 		// Posting Data 가져오기

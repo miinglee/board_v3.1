@@ -95,6 +95,8 @@ protected void configure(HttpSecurity http) throws Exception {
 	//.and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 	
 	//http.authenticationProvider(authProvider); // 로그인 프로세스가 진행될 provider (로그인 버튼이 눌러지면 authenticate 메소드를 호출하여 로그인 검사를 수행함)
+	http.exceptionHandling().accessDeniedPage("/member/accessDenied");
+	http.logout().logoutUrl("/member/logout").logoutSuccessUrl("/member/loginView").deleteCookies("JSESSIONID","accessToken","UserID").invalidateHttpSession(true);
 }
 
 //@Bean

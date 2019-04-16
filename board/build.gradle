@@ -64,6 +64,7 @@ dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest'
 	compile group: 'org.springframework.security', name: 'spring-security-jwt'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
+	
 }
 dependencyManagement {
     imports {

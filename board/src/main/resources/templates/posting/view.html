@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta charset="UTF-8" />
 <title>Insert title here</title>
@@ -27,7 +27,7 @@
 			<input class="form-control" name="createDate" th:value="${#dates.format(vo.createDate,'yyyy-MM-dd HH:mm:ss')}" readonly="readonly" />
 		</div>
 		<div class="form-group">
-			<label>제목</label> <input class="form-control" name="title" th:value="${vo.title}" readonly="readonly" />
+			<label>제목</label> <input class="form-control" name="title" th:value="${vo.title}" readonly="readonly"/>
 			<!-- <p class="help-block">Title text here.</p> -->
 		</div>
 		<div class="form-group">
@@ -44,7 +44,7 @@
 
 		<div class="pull-right">
 			<a th:href="@{ write(flag='ADDWRITE', pno=${vo.pno}, parentNo=${vo.parentNo}, groupOrder=${vo.groupOrder}, groupLayer = ${vo.groupLayer})}" class="btn btn-default">답글</a>
-			<a th:href="@{ modify(page=${pageVO.page}, size=${pageVO.size}, pno =${vo.pno})}" class="btn btn-default">수정/삭제</a> 
+			<a th:if="${UserID} == ${vo.writer}" th:href="@{ modify(page=${pageVO.page}, size=${pageVO.size}, pno =${vo.pno})}" class="btn btn-default">수정/삭제</a> 
 			<a th:href="@{ list(page=${pageVO.page}, size=${pageVO.size}, pno = ${vo.pno})}" class="btn btn-primary">취소</a>
 		</div>
 	</div>
@@ -124,6 +124,7 @@ $(window).load(function(){
 		alert("정상적으로 처리되었습니다.");
 		var stateObj = { msg: "" };
 	}
+
 });
 
 $(document).ready(function (e){
