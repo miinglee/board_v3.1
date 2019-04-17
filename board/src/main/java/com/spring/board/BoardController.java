@@ -43,7 +43,6 @@ import com.spring.board.entity.Posting;
 import com.spring.board.repository.FileRepository;
 import com.spring.board.repository.PostingRepository;
 import com.spring.board.service.AccessTokenService;
-import com.spring.board.service.JwtService;
 import com.spring.board.vo.*;
 
 import lombok.RequiredArgsConstructor;
@@ -64,9 +63,6 @@ public class BoardController {
 	@Autowired
 	private FileRepository fileRepository;
 
-    @Autowired
-    private JwtService jwtService;
-        
     
 	///////////////////////////// # 게시판 리스트
 	@GetMapping("/list")

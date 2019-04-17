@@ -32,7 +32,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.spring.board.entity.Member;
 import com.spring.board.repository.MemberRepository;
 import com.spring.board.service.AccessTokenService;
-import com.spring.board.service.JwtService;
 
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +45,7 @@ import lombok.extern.java.Log;
 public class MemberController {
 
 	@Autowired
-	MemberRepository memberRepository;
-	
-    @Autowired
-    private JwtService jwtService;	
+	MemberRepository memberRepository;	
 
     @Autowired
     private AccessTokenService accessTokenService;
@@ -101,7 +97,7 @@ public class MemberController {
 		Member member = new Member();
 		member.setName(request.getParameter("name"));
 		member.setEmail(request.getParameter("email"));
-		//Role role = new Role();
+		member.setRole("ROLE_USER");
 		//member.setPassword(request.getParameter("password"));
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		member.setPassword(passwordEncoder.encode(request.getParameter("password")));

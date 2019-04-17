@@ -53,7 +53,7 @@
 		<table class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>
-					<th>번호</th>
+					<th style="display:none;">번호</th>
 					<th>내용</th>
 					<th>작성자</th>
 					<th>작성 날짜</th>
@@ -79,16 +79,16 @@
 				</div>
 				<div class="modal-body">
 					<label>작성자</label> 
-					<input type="text" class="form-control" name='txtReplyer' />
+					<input type="text" class="form-control" th:value="${UserID}" name='txtReplyer' readonly="readonly" />
 					<label>내용</label> 
-					<input type="text" class="form-control" name='txtReply' />
+					<input type="text" class="form-control" name='txtReply' maxlength="200"  style="width:568px;height:80px;"/>
 					<input type="hidden" class="form-control" name='txtParentNo' />
 					<input type="hidden" class="form-control" name='txtGroupOrder' />
 					<input type="hidden" class="form-control" name='txtGroupLayer' />
 				</div>
 				<div class="modal-footer">
-					<button type='button' class='btn btn-default' id="btnAddReReply">대댓글</button>
-					<button id='btnDelModal' class="btn btn-danger">삭제</button>
+					<button type='button' class='btn btn-default' id="btnAddReReply">댓글</button>
+					<button id='btnDelModal'  class="btn btn-danger">삭제</button>
 					<button id='btnSaveModal' class="btn btn-info">저장</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
 				</div>
@@ -129,8 +129,9 @@ $(window).load(function(){
 
 $(document).ready(function (e){
 	var mode;
-	
 	var pno = [[${vo.pno}]];
+	var UserID = [[${UserID}]];
+
 	var rnoObj = $("input[name='txtRno']");
 	var txtReplyObj = $("input[name='txtReply']");
 	var txtReplyerObj = $("input[name='txtReplyer']");
@@ -138,18 +139,21 @@ $(document).ready(function (e){
 	var txtParentNoObj = $("input[name='txtParentNo']");
 	var txtGroupOrderObj = $("input[name='txtGroupOrder']");
 	var txtGroupLayerObj = $("input[name='txtGroupLayer']");
-	
+		
 	var hdSeqObj = $("#hdSeq");
 	
 	  var rno; 		
 	  
 	  $("#btnAddReReply").on('click', function(){
 		  debugger
-		  
-		  $("#myModal").modal("hide");
+		  $('#myModal').show().on('shown', function() { 
+			    $('#myModal').modal('hide') 
+			});
+		  //$("#myModal").modal("hide");
+		  txtReplyerObj.val(UserID);
 		  txtReplyObj.val('');
-		  txtReplyerObj.val('');	  
-
+		  txtReplyObj.attr('readonly',false);
+		  
 		  var parentno = txtParentNoObj.val();
 		  var grouporder =  parseInt(txtGroupOrderObj.val()) + 1;
 		  var grouplayer = parseInt(txtGroupLayerObj.val()) +1;
@@ -158,7 +162,9 @@ $(document).ready(function (e){
 		  txtGroupOrderObj.val(grouporder);
 		  txtGroupLayerObj.val(grouplayer);
 
+		  $("#btnSaveModal").show();
 		  $("#btnDelModal").hide();
+		  $("#btnAddReReply").hide();
 		  $("#myModal").modal("show");
 		  $(".modal-title").text("대댓글 수정/삭제");
 		  
@@ -172,10 +178,11 @@ $(document).ready(function (e){
 		  $(".modal-title").text("댓글 작성");
 		  
 		  txtReplyObj.val('');
-		  txtReplyerObj.val('');	
+		  
 		  
 		  $("#btnDelModal").hide();
-		  
+		  $("#btnAddReReply").hide();
+		  		  
 		  var parentno = hdSeqObj.val();
 		  var grouporder = 0;
 		  var grouplayer = 0;
@@ -200,24 +207,46 @@ $(document).ready(function (e){
 		  });
 		  
 		  
-		  $("#tbReply").on("click", "tr", function(e){
-			
-			  var tds = $(this).find('td');
+		  $("#tbReply").on("click", "tr", function(e){		
+
 			  
+			  var tds = $(this).find('td');
 			  //console.log(tds);
 			  
 			  rno = tds[0].innerHTML;
 			  //rno = $("#hdRno").val();
-			  mode ='MOD';
-			  
-			  txtReplyObj.val(tds[0].innerHTML);
-			  txtReplyerObj.val(tds[1].innerHTML);
+			  mode ='MOD'; 
 			  
 			  txtParentNoObj.val($("#hdParentno_"+rno).val());
 			  txtGroupOrderObj.val($("#hdGrouporder_"+rno).val());
 			  txtGroupLayerObj.val($("#hdGrouplayer_"+rno).val());
+			  debugger
+			  var layer = txtGroupLayerObj.val();
+			  var replyText = tds[1].innerHTML;
 			  
-			  $("#btnDelModal").show();
+			  if(layer>0){				 
+				  replyText = tds[1].innerHTML.split('RE: ')[1]
+			  }
+			  
+			  txtReplyObj.val(replyText);
+			  txtReplyerObj.val(tds[2].innerHTML);
+			 
+			  var userID = [[${UserID}]];
+			  var replyer = tds[2].innerHTML.trim();
+			  
+			  if(userID!=replyer){
+				  $("#btnDelModal").hide();
+				  $("#btnSaveModal").hide();
+				  //$("input[name='txtReply']")				  
+				  txtReplyObj.attr('readonly','readonly');
+			  }else if(userID == replyer){
+				  $("#btnDelModal").show();
+				  $("#btnSaveModal").show();
+				  txtReplyObj.attr('readonly',false);
+			  }
+			  
+			  //$("#btnDelModal").show();
+			  $("#btnAddReReply").show();
 			  $("#myModal").modal("show");
 			  $(".modal-title").text("댓글 수정/삭제");
 			  
@@ -227,13 +256,12 @@ $(document).ready(function (e){
 			  printList(list);
 			  $("#myModal").modal("hide");
 			  txtReplyObj.val("");
-			  txtReplyerObj.val("");
+			  //txtReplyerObj.val("");
 		  }
 		  
 		  
 		  $("#btnSaveModal").click(function(){
 			  
-			  debugger
 			  
 			  var replytext =  txtReplyObj.val();
 			  var replyer = txtReplyerObj.val();
@@ -285,10 +313,22 @@ $(document).ready(function (e){
 						replyObj = list[i];
 						var rno = replyObj.rno;
 						var blank = "";
-
+						var layer = replyObj.grouplayer;
+						var replytext = replyObj.replytext;
+						var blank = "";
+						
+						for(var j=0; j<layer; j++){
+							blank += "&nbsp;";
+							if(j==layer-1){
+								blank += "RE: ";
+							}							
+						}
+						
+						blank += replytext;
+						
 						str += "<tr>" +
-		 				"<td>"+ replyObj.rno+" </td>" +
-						"<td>"+ replyObj.replytext+" </td>" +
+		 				"<td style='display:none;'>"+ replyObj.rno+" </td>" +
+						"<td>"+ blank+"</td>" +
 						"<td>"+ replyObj.replyer+" </td>" +
 						"<td>"+ formatDate(replyObj.createdate)+" </td>" +
 						"<input type='hidden' value='"+ replyObj.parentno+"' id='hdParentno_"+rno+"'/>" +
